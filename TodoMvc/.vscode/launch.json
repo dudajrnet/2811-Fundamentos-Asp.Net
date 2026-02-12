@@ -14,7 +14,7 @@
             "name": "C#: TodoMvc",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}\\TodoMvc\\TodoMvc.csproj",
+            "projectPath": "C:/DevLab/GitRepos/2811-Fundamentos-Asp.Net/TodoMvc/TodoMvc.csproj",
             "launchConfigurationId": "TargetFramework=;TodoMvc"
         }
     ]

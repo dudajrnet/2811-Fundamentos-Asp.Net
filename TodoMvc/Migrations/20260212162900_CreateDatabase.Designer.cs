@@ -11,7 +11,7 @@ using TodoMvc.Data;
 namespace TodoMvc.Migrations
 {
     [DbContext(typeof(TodoDbContext))]
-    [Migration("20260212123631_CreateDatabase")]
+    [Migration("20260212162900_CreateDatabase")]
     partial class CreateDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -19,25 +19,34 @@ namespace TodoMvc.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.32");
 
-            modelBuilder.Entity("TodoMvc.Models.TodoModel", b =>
+            modelBuilder.Entity("TodoMvc.Models.ToDoModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("Sqlite:Autoincrement", true);
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("DateTime")
+                        .HasColumnName("CreatedAt")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
                     b.Property<bool>("Done")
-                        .HasColumnType("INTEGER");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("BOOLEAN")
+                        .HasDefaultValue(false)
+                        .HasColumnName("Done");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasMaxLength(80)
+                        .HasColumnType("NVARCHAR")
+                        .HasColumnName("Title");
 
                     b.HasKey("Id");
 
-                    b.ToTable("ToDos");
+                    b.ToTable("ToDo", (string)null);
                 });
 #pragma warning restore 612, 618
         }
