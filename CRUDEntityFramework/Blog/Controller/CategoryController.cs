@@ -1,5 +1,6 @@
 ﻿using Blog.Data;
 using Blog.Models;
+using Blog.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace Blog.Controller
         }
 
         [HttpGet("v1/categories/{id:int}")]
-        public async Task<IActionResult> GetAsync(
+        public async Task<IActionResult> GetByIdAsync(
             [FromRoute] int id,
             [FromServices] BlogDataContext context)
         {
@@ -41,11 +42,18 @@ namespace Blog.Controller
 
         [HttpPost("v1/categories/")]
         public async Task<IActionResult> PostAsync(
-            [FromBody] Category category,
+            [FromBody] EditorCategoryViewModel model,
             [FromServices] BlogDataContext context)
         {
             try
             {
+                var category = new Category()
+                {
+                    Id = 0,
+                    Name = model.Name,
+                    Slug = model.Slug,                    
+                };
+                                        
                 await context.Categories.AddAsync(category);
 
                 await context.SaveChangesAsync();
@@ -64,7 +72,7 @@ namespace Blog.Controller
 
         [HttpPut("v1/categories/{id:int}")]
         public async Task<IActionResult> PutAsync(
-            [FromBody] Category model,
+            [FromBody] EditorCategoryViewModel model,
             [FromRoute] int id,
             [FromServices] BlogDataContext context)
         {
