@@ -1,4 +1,5 @@
 ﻿using Blog.Data;
+using Blog.Extentions;
 using Blog.Models;
 using Blog.ViewModel;
 using Microsoft.AspNetCore.Mvc;
@@ -13,12 +14,19 @@ namespace Blog.Controller
         [HttpGet("v1/categories")]
         public async Task<IActionResult> GetAsync([FromServices] BlogDataContext context)
         {
-            var categories = await context.Categories.AsNoTracking().ToListAsync();
+            try
+            {
+                var categories = await context.Categories.AsNoTracking().ToListAsync();
 
-            return Ok(categories);
+                return Ok(new ResultViewModel<List<Category>>(categories));
+            }
+            catch
+            {
+                return StatusCode(500, new ResultViewModel<Category>("A000 - Não foi possível listar a(s) categoria(s)!"));
+            }
         }
 
-        [HttpGet("v1/categories/{id:int}")]
+        [HttpGet("v1/categories/{id:int}")]//Todo
         public async Task<IActionResult> GetByIdAsync(
             [FromRoute] int id,
             [FromServices] BlogDataContext context)
@@ -30,13 +38,13 @@ namespace Blog.Controller
                             .FirstOrDefaultAsync(category => category.Id == id);
 
                 if (category == null)
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("Conteúdo não encontrado"));
 
-                return Ok(category);
+                return Ok( new ResultViewModel<Category>(category));
             }
-            catch (Exception)
+            catch
             {
-                return StatusCode(500, "A001 - Não foi possível obter a categoria!");
+                return StatusCode(500, new ResultViewModel<Category>("A001 - Não foi possível obter a categoria!"));
             }
         }
 
@@ -45,6 +53,9 @@ namespace Blog.Controller
             [FromBody] EditorCategoryViewModel model,
             [FromServices] BlogDataContext context)
         {
+            if(!ModelState.IsValid)
+                return BadRequest(new ResultViewModel<Category>(ModelState.GetErrors()));
+
             try
             {
                 var category = new Category()
@@ -58,15 +69,11 @@ namespace Blog.Controller
 
                 await context.SaveChangesAsync();
 
-                return Created($"v1/categories/{category.Id}", category);
-            }
-            catch (SqlException)
+                return Created($"v1/categories/{category.Id}", new ResultViewModel<Category>(category));
+            }                        
+            catch
             {
-                return StatusCode(500, "A002 - Não foi possível criar a categoria!");
-            }
-            catch (Exception)
-            {
-                return StatusCode(500, "A003 - Não foi possível criar a categoria!");
+                return StatusCode(500, new ResultViewModel<Category>("A003 - Não foi possível criar a categoria!"));
             }
         }
 
@@ -83,7 +90,7 @@ namespace Blog.Controller
                             .FirstOrDefaultAsync(category => category.Id == id);
 
                 if (category == null)
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("Conteúdo não encontrado"));
 
                 category.Name = model.Name;
                 category.Slug = model.Slug;
@@ -92,11 +99,11 @@ namespace Blog.Controller
 
                 await context.SaveChangesAsync();
 
-                return Ok(category);
+                return Ok(new ResultViewModel<Category>(category));
             }
-            catch (Exception)
+            catch
             {
-                return StatusCode(500, "A004 - Não foi possível alterar a categoria!");
+                return StatusCode(500, new ResultViewModel<Category>("A004 - Não foi possível alterar a categoria!"));
             }
         }
 
@@ -112,17 +119,17 @@ namespace Blog.Controller
                             .FirstOrDefaultAsync(category => category.Id == id);
 
                 if (category == null)
-                    return NotFound();
+                    return NotFound(new ResultViewModel<Category>("Conteúdo não encontrado."));
 
                 context.Categories.Remove(category);
 
                 await context.SaveChangesAsync();
 
-                return Ok("Registro apagado com sucesso!");
+                return Ok(new ResultViewModel<Category>("Registro apagado com sucesso!"));
             }
-            catch (Exception)
+            catch
             {
-                return StatusCode(500, "A001 - Não foi possível apagar a categoria!");
+                return StatusCode(500, new ResultViewModel<Category>("A001 - Não foi possível apagar a categoria!"));
             }
         }
     }
