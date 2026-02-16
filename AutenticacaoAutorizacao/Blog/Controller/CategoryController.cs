@@ -129,7 +129,7 @@ namespace Blog.Controller
             }
             catch
             {
-                return StatusCode(500, new ResultViewModel<Category>("A001 - Não foi possível apagar a categoria!"));
+                return StatusCode(500, new ResultViewModel<Category>("A005 - Não foi possível apagar a categoria!"));
             }
         }
     }
