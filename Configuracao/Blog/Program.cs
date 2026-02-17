@@ -23,6 +23,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+app.UseStaticFiles();
+
 app.Run();
 
 void LoadConfiguration(WebApplication app) 
